@@ -21,7 +21,7 @@ affiliations:
  - name: Texas Advanced Computing Center, University of Texas at Austin, Texas, USA
    index: 3
 date: 16 October 2022
-bibliography: paper.bib
+bibliography: references.bib
 
 # Optional fields if submitting to a AAS journal too, see this blog post:
 # https://blog.joss.theoj.org/2018/12/a-new-collaboration-with-aas-publishing
