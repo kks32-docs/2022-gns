@@ -6,10 +6,11 @@ tags:
   - simulation
 authors:
   - name: Krishna Kumar
-    orcid: 0000-0000-0000-0000
+    orcid: 0000-0003-2144-5562
     equal-contrib: false
     affiliation: 1 # (Multiple affiliations must be quoted)
   - name: Joseph Vantassel
+    orcid: 0000-0002-1601-3354
     equal-contrib: false # (This is how you can denote equal contributions between multiple authors)
     affiliation: "2,3"
 
@@ -29,7 +30,7 @@ bibliography: references.bib
 
 # Summary
 
-Graph Network Simulator
+Geometric Deep Learning (GDL) has emerged as a highly impactful sub-field of machine learning focused on non-Euclidean data structures, such as graphs [@sanchez2020learning,battaglia2018relational]. Graphs are powerful data representations of many real-world applications, including particulate systems, material sciences, drug discovery, astrophysics, and engineering. Graph Neural Networks (GNNs)[scarselli2008graph] are state-of-the-art GDL algorithms operating on graphs to represent rich relational information and local vertex features. 
 
 # Statement of need
 
