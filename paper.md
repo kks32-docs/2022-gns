@@ -61,7 +61,8 @@ The Graph Network Simulator (GNS) uses PyTorch and PyTorch Geometric for constru
 # GNS training and prediction
 ## Dataset format
 The data loader provided with this PyTorch implementation utilizes the more general `.npz` format.  
-The `.npz` format includes a list of tuples of arbitrary length where each tuple is for a different training trajectory and is of the form `(position, particle_type)`.  
+The `.npz` format includes a list of tuples of arbitrary length where each tuple is for a different training trajectory and is of the form `(position, particle_type)`.
+GNS takes the last five positions as an input to predict the position at the next time step. 
 The `position` is a 3-D tensor of shape `(n_time_steps, n_particles, n_dimensions)` and `particle_type` is a 1-D tensor of shape `(n_particles)`.  
 
 The dataset contains:
@@ -72,6 +73,8 @@ The dataset contains:
 {"bounds": [[0.1, 0.9], [0.1, 0.9]], "sequence_length": 320, "default_connectivity_radius": 0.015, "dim": 2, "dt": 0.0025, "vel_mean": [5.123277536458455e-06, -0.0009965205918140803], "vel_std": [0.0021978993231675805, 0.0026653552458701774], "acc_mean": [5.237611158734309e-07, 2.3633027988858656e-07], "acc_std": [0.0002582944917306106, 0.00029554531667679154]}
 ```
 * npz containing data for all trajectories `(particle types, positions, global context, ...)`:
+
+Training dataset for Sand, SandRamps, and WaterDrop are available on [DesignSafe Data Depot](https://www.designsafe-ci.org/data/browser/public/designsafe.storage.published/PRJ-3702) [@vantassel2022gnsdata].
 
 # Parallelization and scaling
 
