@@ -1,5 +1,5 @@
 ---
-title: 'GNS: Graph Network Simulator'
+title: 'GNS: Graph Neural Network-based Simulator'
 tags:
   - Python
   - machine learning
@@ -30,30 +30,33 @@ bibliography: references.bib
 
 # Summary
 
-Geometric Deep Learning (GDL) is a highly impactful sub-field of machine learning focused on non-Euclidean data structures, such as graphs [@sanchez2020learning,@battaglia2018relational].  Graphs are powerful data representations of many real-world applications, including particulate systems, material sciences, drug discovery, astrophysics, and engineering.  Graph Neural Networks (GNNs)[@scarselli2008graph] are state-of-the-art GDL algorithms operating on graphs to represent rich relational information and local node features.  A GNN maps an input graph to an output graph with the same structure but potentially different node, edge, and global feature attributes.  
-
-\autoref{fig:gnn} shows an overview of the GNN learning to simulate n-body dynamics.  The graph network spans the physical domain with nodes representing an individual or a collection of particles, and the edges connecting the vertices represent the local interaction between particles or clusters of particles.  The GNN learns the dynamics, such as momentum and energy exchange, through a form of messages passing [@gilmer2017neural], where latent information propagates between nodes via the graph edges.  GNN has three components: (a) Encoder, which embeds particle information to a latent graph, the edges represent learned functions; (b) Processor, which allows data propagation and computes the nodal interactions across steps; and (c) Decoder, which extracts the relevant dynamics (e.g., particle acceleration) from the graph. 
+Graph Network-based Simulator (GNS) is a framework for developing generalizable, efficient, and accurate surrogate models for particulate and fluid systems using Graph Neural Networks (GNNs).  GNNs are the state-of-the-art geometric deep learning (GDL) that operates on graphs to represent rich relational information[@scarselli2008graph], which maps an input graph to an output graph with the same structure but potentially different node, edge, and global feature attributes.  The graph network in GNS spans the physical domain with nodes representing an individual or a collection of particles, and the edges connecting the vertices represent the local interaction between particles or clusters of particles.  GNS computes the system dynamics via learned message passing.  \autoref{fig:gnn} shows an overview of how GNS learns to simulate n-body dynamics.  GNS has three components: (a) Encoder, which embeds particle information to a latent graph, the edges represent learned functions; (b) Processor, which allows data propagation and computes the nodal interactions across steps; and (c) Decoder, which extracts the relevant dynamics (e.g., particle acceleration) from the graph.  The GNS learns the dynamics, such as momentum and energy exchange, through a form of messages passing [@gilmer2017neural], where latent information propagates between nodes via the graph edges.  The GNS edge messages  ($e^\prime_k \leftarrow \phi^e(e_k, v_{r_k}, v_{s_k}, u)$) are a learned linear combination of the interaction forces.  The edge messages are aggregated at every node exploiting the principle of superposition $\bar{e_i^\prime} \leftarrow \sum_{r_k = i} e_i^\prime$.  The node then encodes the connected edge features and its local features using a neural network: $v_i^\prime \leftarrow \phi^v (\bar{e_i}, v_i, u)$.  
 
 ![An overview of the graph network simulator (GNS).\label{fig:gns}](figs/gnn.png)
 
-GNN learns to predict the particle dynamics through message passing~\cite{sanchez2020learning}.  The GNN edge messages  ($e^\prime_k \leftarrow \phi^e(e_k, v_{r_k}, v_{s_k}, u)$) are a learned linear combination of the true forces.  The edge messages are aggregated at every node exploiting the principle of superposition $\bar{e_i^\prime} \leftarrow \sum_{r_k = i} e_i^\prime$.  The node then encodes the connected edge features and its local features using a neural network: $v_i^\prime \leftarrow \phi^v (\bar{e_i}, v_i, u)$.  The GNN implementation uses semi-implicit Euler integration to update the next state of the particles based on the predicted accelerations at the vertices.  We introduce physics-inspired simple inductive biases, such as an inertial frame that allows learning algorithms to prioritize one solution (constant gravitational acceleration) over another, reducing learning time.  GNS trained on particle simulations can predict the behavior of n-body particle dynamics, such as granular flows and water.  \autoref{fig:gns-mpm} shows the GNS prediction of granular column collapse trained on 20 Million steps with 40 trajectories on NVIDIA A100 GPUs.  The trained model accurately predicts within 5\% of error compared to MPM simulations.  GNN trained on trajectory data is generalizable to predict particle kinematics in complex boundary conditions not seen during training.  We developed an open-source PyTorch GNN simulator (GNS) that can successfully predict the dynamics of fluid and particulate systems[@Kumar_Graph_Network_Simulator_2022].
+The GNS implementation uses semi-implicit Euler integration to update the next state of the particles based on the predicted accelerations at the nodes.  We introduce physics-inspired simple inductive biases, such as an inertial frame that allows learning algorithms to prioritize one solution (constant gravitational acceleration) over another, reducing learning time.  We developed an open-source PyTorch-based GNS that predicts the dynamics of fluid and particulate systems[@Kumar_Graph_Network_Simulator_2022].  \autoref{fig:gns-mpm} shows the GNS prediction of granular column collapse trained on 20 Million steps with 40 trajectories on NVIDIA A100 GPUs.  The trained model accurately predicts within 5\% of error compared to MPM simulations.  GNS trained on trajectory data is generalizable to predict particle kinematics in complex boundary conditions not seen during training.
 
 ![GNS prediction of granular flow on ramps, compared against MPM simulation.\label{fig:gns-mpm}](figs/gns-mpm.png)
 
 # Statement of need
 
-GNS [@sanchez2020learning]
-
-The GNN simulator is scalable to 100,000 vertices and more than one million edges.
+Traditional numerical methods for solving differential equations are invaluable in scientific and engineering disciplines.  However, such simulators are computationally expensive and intractable for solving large-scale and complex inverse problems, multiphysics, and multi-scale mechanics.  Surrogate models trade off generality for accuracy in a narrow setting.  Recent growth in data availability has spurred data-driven machine learning (ML) models that train directly from observed data [@bouwmans2019deep,@ren2020physics,@moayedi2020systematic].  ML models require significant training data to cover the large state space and complex dynamics.  Instead of ignoring the vast amount of structured prior knowledge (physics), we can exploit such knowledge to construct physics-informed ML algorithms with limited training data~\citep{li2019time,hu2019difftaichi,haghighat2020sciann}.  GNS uses static and inertial priors to learn the interactions between particles directly on graphs and can generalize with limited training data [@wu2020comprehensive,@velivckovic2017graph].  Graph-based GNS offers powerful data representations of real-world applications, including particulate systems, material sciences, drug discovery, astrophysics, and engineering [@sanchez2020learning,@battaglia2018relational].
 
 # State of the art
 
+TensorFlow
+
 # Key features 
+
+The Graph Network Simulator (GNS) uses PyTorch and PyTorch Geometric for message passing. GNS is highly-scalable to 100,000 vertices and more than a million edges. GNS supports the following features:
 
 - CPU and GPU training and predictions
 - Parallel training on multi-GPUs
+- Multi-material interactions
+- Complex boundary conditions
 - Checkpoint restart
 - VTK results
+- Animation postprocessing
 
 # GNS training and prediction
 ## Dataset format
