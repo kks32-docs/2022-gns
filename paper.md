@@ -40,17 +40,17 @@ The GNS implementation uses semi-implicit Euler integration to update the next s
 
 # Statement of need
 
-Traditional numerical methods for solving differential equations are invaluable in scientific and engineering disciplines.  However, such simulators are computationally expensive and intractable for solving large-scale and complex inverse problems, multiphysics, and multi-scale mechanics.  Surrogate models trade off generality for accuracy in a narrow setting.  Recent growth in data availability has spurred data-driven machine learning (ML) models that train directly from observed data [@prume2022model].  ML models require significant training data to cover the large state space and complex dynamics.  Instead of ignoring the vast amount of structured prior knowledge (physics), we can exploit such knowledge to construct physics-informed ML algorithms with limited training data.  GNS uses static and inertial priors to learn the interactions between particles directly on graphs and can generalize with limited training data [@wu2020comprehensive,@velivckovic2017graph].  Graph-based GNS offers powerful data representations of real-world applications, including particulate systems, material sciences, drug discovery, astrophysics, and engineering [@sanchez2020learning,@battaglia2018relational].
+Traditional numerical methods for solving differential equations are invaluable in scientific and engineering disciplines.  However, such simulators are computationally expensive and intractable for solving large-scale and complex inverse problems, multiphysics, and multi-scale mechanics.  Surrogate models trade off generality for accuracy in a narrow setting.  Recent growth in data availability has spurred data-driven machine learning (ML) models that train directly from observed data [@prume2022model].  ML models require significant training data to cover the large state space and complex dynamics.  Instead of ignoring the vast amount of structured prior knowledge (physics), we can exploit such knowledge to construct physics-informed ML algorithms with limited training data.  GNS uses static and inertial priors to learn the interactions between particles directly on graphs and can generalize with limited training data [@wu2020comprehensive;@velivckovic2017graph].  Graph-based GNS offers powerful data representations of real-world applications, including particulate systems, material sciences, drug discovery, astrophysics, and engineering [@sanchez2020learning;@battaglia2018relational].
 
 # State of the art
 
-TensorFlow
+@sanchez2020learning developed a reference GNS implementation based on TensorFlow V1 [@tensorflow2015whitepaper].  Although the reference implementation runs both on CPU and GPU, it doesn't achieve multi-GPU scaling.  Furthermore, the dependence on TensorFlow V1 limits its ability to leverage features such as eager execution in TF2.  We develop a scalable and modular GNS using PyTorch, which is capable of leveraging Distributed Data Parallel model in PyTorch to run on multi-GPU systems.
 
 # Key features 
 
-The Graph Network Simulator (GNS) uses PyTorch and PyTorch Geometric for constructing graph and learned message passing. GNS is highly-scalable to 100,000 vertices and more than a million edges. GNS supports the following features:
+The Graph Network Simulator (GNS) uses PyTorch and PyTorch Geometric for constructing graphs and learned message passing. GNS is highly-scalable to 100,000 vertices and more than a million edges. The PyTorch GNS supports the following features:
 
-- CPU and GPU training and predictions
+- CPU and GPU training
 - Parallel training on multi-GPUs
 - Multi-material interactions
 - Complex boundary conditions
@@ -59,18 +59,28 @@ The Graph Network Simulator (GNS) uses PyTorch and PyTorch Geometric for constru
 - Animation postprocessing
 
 # GNS training and prediction
+GNS models are trained on 1000s of particle trajectories from Material Point Method (for sands) and Smooth Particle Hydrodynamics (for water) for 20 Million steps. 
+
 ## Dataset format
-The data loader provided with this PyTorch implementation utilizes the more general `.npz` format.  
-The `.npz` format includes a list of tuples of arbitrary length where each tuple is for a different training trajectory and is of the form `(position, particle_type)`.
-GNS takes the last five positions as an input to predict the position at the next time step. 
-The `position` is a 3-D tensor of shape `(n_time_steps, n_particles, n_dimensions)` and `particle_type` is a 1-D tensor of shape `(n_particles)`.  
+The data loader provided with this PyTorch implementation utilizes the more general `.npz` format.  The `.npz` format includes a list of tuples of arbitrary length where each tuple is for a different training trajectory and is of the form `(position, particle_type)`.
+GNS takes the last five positions as an input to predict the position at the next time step.  The `position` is a 3-D tensor of shape `(n_time_steps, n_particles, n_dimensions)` and `particle_type` is a 1-D tensor of shape `(n_particles)`.  
 
 The dataset contains:
 
 * Metadata file with dataset information `(sequence length, dimensionality, box bounds, default connectivity radius, statistics for normalization, ...)`:
 
 ```
-{"bounds": [[0.1, 0.9], [0.1, 0.9]], "sequence_length": 320, "default_connectivity_radius": 0.015, "dim": 2, "dt": 0.0025, "vel_mean": [5.123277536458455e-06, -0.0009965205918140803], "vel_std": [0.0021978993231675805, 0.0026653552458701774], "acc_mean": [5.237611158734309e-07, 2.3633027988858656e-07], "acc_std": [0.0002582944917306106, 0.00029554531667679154]}
+{
+  "bounds": [[0.1, 0.9], [0.1, 0.9]], 
+  "sequence_length": 320, 
+  "default_connectivity_radius": 0.015, 
+  "dim": 2, 
+  "dt": 0.0025, 
+  "vel_mean": [5.123277536458455e-06, -0.0009965205918140803], 
+  "vel_std": [0.0021978993231675805, 0.0026653552458701774], 
+  "acc_mean": [5.237611158734309e-07, 2.3633027988858656e-07], 
+  "acc_std": [0.0002582944917306106, 0.00029554531667679154]
+}
 ```
 * npz containing data for all trajectories `(particle types, positions, global context, ...)`:
 
