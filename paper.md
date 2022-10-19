@@ -48,7 +48,7 @@ TensorFlow
 
 # Key features 
 
-The Graph Network Simulator (GNS) uses PyTorch and PyTorch Geometric for message passing. GNS is highly-scalable to 100,000 vertices and more than a million edges. GNS supports the following features:
+The Graph Network Simulator (GNS) uses PyTorch and PyTorch Geometric for constructing graph and learned message passing. GNS is highly-scalable to 100,000 vertices and more than a million edges. GNS supports the following features:
 
 - CPU and GPU training and predictions
 - Parallel training on multi-GPUs
