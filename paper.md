@@ -34,7 +34,7 @@ Graph Network-based Simulator (GNS) is a framework for developing generalizable,
 
 ![An overview of the graph network simulator (GNS).\label{fig:gns}](figs/gnn.png)
 
-The GNS implementation uses semi-implicit Euler integration to update the state of the particles based on the nodes predicted accelerations.  **We introduce physics-inspired simple inductive biases, such as an inertial frame that allows learning algorithms to prioritize one solution (constant gravitational acceleration) over another, reducing learning time. <- Note sure what you mean here (JPV)**  We developed an open-source, PyTorch-based GNS that predicts the dynamics of fluid and particulate systems[@Kumar_Graph_Network_Simulator_2022].  \autoref{fig:gns-mpm} shows the GNS prediction of granular column collapse trained on 20 million steps with 40 trajectories on NVIDIA A100 GPUs.  The trained model accurately predicts within 5\% error of its associated material point method (MPM) simulation.  GNS trained on trajectory data is generalizable to predict particle kinematics in complex boundary conditions not seen during training. **Examples? (JPV)**
+The GNS implementation uses semi-implicit Euler integration to update the state of the particles based on the nodes predicted accelerations.  We introduce physics-inspired simple inductive biases, such as an inertial frame that allows learning algorithms to prioritize one solution over another (instead of learning to predict the inertial motion, the neural network learns to trivially predict a correction to the inertial trajectory, reducing learning time.  We developed an open-source, PyTorch-based GNS that predicts the dynamics of fluid and particulate systems[@Kumar_Graph_Network_Simulator_2022].  GNS trained on trajectory data is generalizable to predict particle kinematics in complex boundary conditions not seen during training.  \autoref{fig:gns-mpm} shows the GNS prediction of granular flow around complex obstacles trained on 20 million steps with 40 trajectories on NVIDIA A100 GPUs.  The trained model accurately predicts within 5\% error of its associated material point method (MPM) simulation.  
 
 ![GNS prediction of granular flow on ramps, compared against MPM simulation.\label{fig:gns-mpm}](figs/gns-mpm.png)
 
@@ -44,7 +44,7 @@ Traditional numerical methods for solving differential equations are invaluable 
 
 # State of the art
 
-@sanchez2020learning  **bracket needed? (JPV)** developed a reference GNS implementation based on TensorFlow V1 [@tensorflow2015whitepaper].  Although the reference implementation runs both on CPU and GPU, it doesn't achieve multi-GPU scaling.  Furthermore, the dependence on TensorFlow V1 limits its ability to leverage features such as eager execution in TF2.  We develop a scalable and modular GNS using PyTorch using the Distributed Data Parallel model to run on multi-GPU systems.
+@sanchez2020learning developed a reference GNS implementation based on TensorFlow V1 [@tensorflow2015whitepaper].  Although the reference implementation runs both on CPU and GPU, it doesn't achieve multi-GPU scaling.  Furthermore, the dependence on TensorFlow V1 limits its ability to leverage features such as eager execution in TF2.  We develop a scalable and modular GNS using PyTorch using the Distributed Data Parallel model to run on multi-GPU systems.
 
 # Key features 
 
