@@ -36,7 +36,7 @@ Graph Network-based Simulator (GNS) is a framework for developing generalizable,
 
 The GNS implementation uses semi-implicit Euler integration to update the state of the particles based on the nodes predicted accelerations.  We introduce physics-inspired simple inductive biases, such as an inertial frame that allows learning algorithms to prioritize one solution over another (instead of learning to predict the inertial motion, the neural network learns to trivially predict a correction to the inertial trajectory, reducing learning time.  We developed an open-source, PyTorch-based GNS that predicts the dynamics of fluid and particulate systems [@Kumar_Graph_Network_Simulator_2022].  GNS trained on trajectory data is generalizable to predict particle kinematics in complex boundary conditions not seen during training.  \autoref{fig:gns-mpm} shows the GNS prediction of granular flow around complex obstacles trained on 20 million steps with 40 trajectories on NVIDIA A100 GPUs.  The trained model accurately predicts within 5\% error of its associated material point method (MPM) simulation.  The predictions are 5000x faster than traditional MPM simulations and are widely used for solving optimization, control and inverse-type problems.  In addition to surrogate modeling, GNS trained on flow problems is also used as an oracle to predict the dynamics of flows to identify critical regions of interest for in situ rendering and visualization [@kumar2022insitu].  The GNS code is distributed under the open-source MIT license and is available on [GitHub Geoelements GNS](https://github.com/geoelements/gns).
 
-![GNS prediction of granular flow on ramps, compared against MPM simulation.\label{fig:gns-mpm}](figs/gns-mpm.png)
+![GNS prediction of granular flow on ramps, compared against MPM simulation.\label{fig:gns-mpm}](figs/gns-mpm.png){ width=80% }
 
 # Statement of need
 
@@ -95,7 +95,8 @@ $$f(\theta) = \frac{1}{n}\sum_{i=1}^n (GNS_\theta(x_t^i) - a_t^i)\,,$$
 
 where $n$ is the number of particles (nodes) and $\theta$ is the learnable parameter in the GNS. In DDP, the gradient $\nabla (f(\theta))$ is computed as the average gradient across all GPUs as shown in \autoref{fig:gns-ddp}.
 
-![Distributed data parallelization in GNS.\label{fig:gns-ddp}](figs/gns-ddp.png)
+![Distributed data parallelization in GNS.\label{fig:gns-ddp}](figs/gns-ddp.png){ width=80% }
+
 
 A test of the GNS's scalability was performed on a node of Lonestar 6 at the Texas Advanced Computing Center equipped with three NVIDIA A100 GPUs.  Performance wave evaluated using the WaterDropSample training dataset for 6000 training steps.  Tests were performed using the recommended `nccl` DDP backend.  Results of the strong-scaling test, see \autoref{fig:gns-scaling}, show strong scaling performance.
 
