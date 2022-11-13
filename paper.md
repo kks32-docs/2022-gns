@@ -64,7 +64,7 @@ GNS models are trained on 1000s of particle trajectories from MPM (for sands) an
 
 ## Dataset format
 
-The data loader provided with the PyTorch implementation utilizes the more general `.npz` format.  The `.npz` format includes a list of tuples of arbitrary length where each tuple corresponds to a differenet training trajectory and is of the form `(position, particle_type)`. The data loader provides `INPUT_SEQUENCE_LENGTH` positions, set equal to six by default, to provide the GNS with the last `INPUT_SEQUENCE_LENGTH` minus one positions as input to predict the position at the next time step.  The `position` is a 3-D tensor of shape `(n_time_steps, n_particles, n_dimensions)` and `particle_type` is a 1-D tensor of shape `(n_particles)`.  
+The data loader provided with the PyTorch implementation utilizes the more general `.npz` format.  The `.npz` format includes a list of tuples of arbitrary length where each tuple corresponds to a differenet training trajectory and is of the form `(position, particle_type)`.  The data loader provides `INPUT_SEQUENCE_LENGTH` positions, set equal to six by default, to provide the GNS with the last `INPUT_SEQUENCE_LENGTH` minus one positions as input to predict the position at the next time step.  The `position` is a 3-D tensor of shape `(n_time_steps, n_particles, n_dimensions)` and `particle_type` is a 1-D tensor of shape `(n_particles)`.  
 
 The dataset contains:
 
@@ -89,7 +89,15 @@ Training datasets for Sand, SandRamps, and WaterDropSample are available on [Des
 
 # Parallelization and scaling
 
-The GNS is parallelized to run across multiple GPUs using the PyTorch Distributed Data Parallel (DDP) model. A test of the GNS's scalability was performed on a node of Lonestar 6 at the Texas Advanced Computing Center equipped with three NVIDIA A100 GPUs.  Performance wave evaluated using the WaterDropSample training dataset for 6000 training steps.  Tests were performed using the recommended `nccl` DDP backend.  Results of the strong-scaling test, see \autoref{fig:gns-scaling}, show strong performance.
+The GNS is parallelized to run across multiple GPUs using the PyTorch Distributed Data Parallel (DDP) model.  The DDP model spawns as many GNS models as the number of GPUs, distributing the dataset across all GPU nodes.  Consider, our training dataset with 20 simulations, each with 206 time steps of positional data $x_i$, which yields $(206 - 6) * 20 = 4000$ training trajectories.  We subtract six position from the GNS training dataset as we utilize five previous velocities, computed from six positions, to predict the next position.  The 4000 training tajectories are subsequently distributed equally to the four GPUs (1000 training trajectories/GPU).  Assuming a batch size of 2, each GPU handles 500 trajectories in a batch.  The loss from the training trajectories are computed as
+
+$$f(\theta) = \frac{1}{n}\sum_{i=1}^n (GNS_\theta(x_t^i) - a_t^i)\,,$$
+
+where $n$ is the number of particles (nodes) and $\theta$ is the learnable parameter in the GNS. In DDP, the gradient $\grad (f(\theta))$ is computed as the average gradient across all GPUs as shown in \autoref{fig:gns-ddp}.
+
+![Distributed data parallelization in GNS.\label{fig:gns-ddp}](figs/gns-ddp.png)
+
+A test of the GNS's scalability was performed on a node of Lonestar 6 at the Texas Advanced Computing Center equipped with three NVIDIA A100 GPUs.  Performance wave evaluated using the WaterDropSample training dataset for 6000 training steps.  Tests were performed using the recommended `nccl` DDP backend.  Results of the strong-scaling test, see \autoref{fig:gns-scaling}, show strong performance.
 
 ![GNS strong-scaling on up to three NVIDIA A100 GPUs.\label{fig:gns-scaling}](figs/gns-scaling.png)
 
