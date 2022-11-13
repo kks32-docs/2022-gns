@@ -1,5 +1,5 @@
 ---
-title: 'GNS: Graph Neural Network-based Simulator'
+title: 'GNS: A generalizable Graph Neural Network-based simulator for particulate and fluid modeling'
 tags:
   - Python
   - machine learning
@@ -30,7 +30,7 @@ bibliography: references.bib
 
 # Summary
 
-Graph Network-based Simulator (GNS) is a framework for developing generalizable, efficient, and accurate surrogate models for particulate and fluid systems using Graph Neural Networks (GNNs).  GNNs are the state-of-the-art geometric deep learning (GDL) that operates on graphs to represent rich relational information[@scarselli2008graph], which maps an input graph to an output graph with the same structure but potentially different node, edge, and global feature attributes.  The graph network in GNS spans the physical domain with nodes representing an individual or a collection of particles, and the edges connecting the vertices representing the local interaction between particles or clusters of particles.  The GNS computes the system dynamics via learned message passing.  \autoref{fig:gns} shows an overview of how GNS learns to simulate n-body dynamics.  The GNS has three components: (a) Encoder, which embeds particle information to a latent graph, the edges represent learned functions; (b) Processor, which allows data propagation and computes the nodal interactions across steps; and (c) Decoder, which extracts the relevant dynamics (e.g., particle acceleration) from the graph.  The GNS learns the dynamics, such as momentum and energy exchange, through a form of messages passing [@gilmer2017neural], where latent information propagates between nodes via the graph edges.  The GNS edge messages  ($e^\prime_k \leftarrow \phi^e(e_k, v_{r_k}, v_{s_k}, u)$) are a learned linear combination of the interaction forces.  The edge messages are aggregated at every node exploiting the principle of superposition $\bar{e_i^\prime} \leftarrow \sum_{r_k = i} e_i^\prime$.  The node then encodes the connected edge features and its local features using a neural network: $v_i^\prime \leftarrow \phi^v (\bar{e_i}, v_i, u)$.  
+Graph Network-based Simulator (GNS) is a framework for developing generalizable, efficient, and accurate machine learning (ML)-based surrogate models for particulate and fluid systems using Graph Neural Networks (GNNs).  GNNs are the state-of-the-art geometric deep learning (GDL) that operates on graphs to represent rich relational information[@scarselli2008graph], which maps an input graph to an output graph with the same structure but potentially different node, edge, and global feature attributes.  The graph network in GNS spans the physical domain with nodes representing an individual or a collection of particles, and the edges connecting the vertices representing the local interaction between particles or clusters of particles.  The GNS computes the system dynamics via learned message passing.  \autoref{fig:gns} shows an overview of how GNS learns to simulate n-body dynamics.  The GNS has three components: (a) Encoder, which embeds particle information to a latent graph, the edges represent learned functions; (b) Processor, which allows data propagation and computes the nodal interactions across steps; and (c) Decoder, which extracts the relevant dynamics (e.g., particle acceleration) from the graph.  The GNS learns the dynamics, such as momentum and energy exchange, through a form of messages passing [@gilmer2017neural], where latent information propagates between nodes via the graph edges.  The GNS edge messages  ($e^\prime_k \leftarrow \phi^e(e_k, v_{r_k}, v_{s_k}, u)$) are a learned linear combination of the interaction forces.  The edge messages are aggregated at every node exploiting the principle of superposition $\bar{e_i^\prime} \leftarrow \sum_{r_k = i} e_i^\prime$.  The node then encodes the connected edge features and its local features using a neural network: $v_i^\prime \leftarrow \phi^v (\bar{e_i}, v_i, u)$.  
 
 ![An overview of the graph network simulator (GNS).\label{fig:gns}](figs/gnn.png)
 
@@ -44,7 +44,7 @@ Traditional numerical methods for solving differential equations are invaluable 
 
 # State of the art
 
-@sanchez2020learning developed a reference GNS implementation based on TensorFlow V1 [@tensorflow2015whitepaper].  Although the reference implementation runs both on CPU and GPU, it doesn't achieve multi-GPU scaling.  Furthermore, the dependence on TensorFlow V1 limits its ability to leverage features such as eager execution in TF2.  We develop a scalable and modular GNS using PyTorch using the Distributed Data Parallel model to run on multi-GPU systems.
+@sanchez2020learning developed a reference GNS implementation based on TensorFlow v1 [@tensorflow2015whitepaper].  Although the reference implementation runs both on CPU and GPU, it doesn't achieve multi-GPU scaling.  Furthermore, the dependence on TensorFlow v1 limits its ability to leverage features such as eager execution in TF v2.  We develop a scalable and modular GNS using PyTorch using the Distributed Data Parallel model to run on multi-GPU systems.
 
 # Key features 
 
@@ -64,7 +64,7 @@ GNS models are trained on 1000s of particle trajectories from MPM (for sands) an
 
 ## Dataset format
 
-The data loader provided with the PyTorch implementation utilizes the more general `.npz` format.  The `.npz` format includes a list of tuples of arbitrary length where each tuple corresponds to a differenet training trajectory and is of the form `(position, particle_type)`.  The data loader provides `INPUT_SEQUENCE_LENGTH` positions, set equal to six by default, to provide the GNS with the last `INPUT_SEQUENCE_LENGTH` minus one positions as input to predict the position at the next time step.  The `position` is a 3-D tensor of shape `(n_time_steps, n_particles, n_dimensions)` and `particle_type` is a 1-D tensor of shape `(n_particles)`.  
+We use the numpy `.npz` format for storing positional data for GNS training.  The `.npz` format includes a list of tuples of arbitrary length where each tuple corresponds to a differenet training trajectory and is of the form `(position, particle_type)`.  The data loader provides `INPUT_SEQUENCE_LENGTH` positions, set equal to six by default, to provide the GNS with the last `INPUT_SEQUENCE_LENGTH` minus one positions as input to predict the position at the next time step.  The `position` is a 3-D tensor of shape `(n_time_steps, n_particles, n_dimensions)` and `particle_type` is a 1-D tensor of shape `(n_particles)`.  
 
 The dataset contains:
 
