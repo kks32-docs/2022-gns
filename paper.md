@@ -93,7 +93,7 @@ The GNS is parallelized to run across multiple GPUs using the PyTorch Distribute
 
 $$f(\theta) = \frac{1}{n}\sum_{i=1}^n (GNS_\theta(x_t^i) - a_t^i)\,,$$
 
-where $n$ is the number of particles (nodes) and $\theta$ is the learnable parameter in the GNS. In DDP, the gradient $\grad (f(\theta))$ is computed as the average gradient across all GPUs as shown in \autoref{fig:gns-ddp}.
+where $n$ is the number of particles (nodes) and $\theta$ is the learnable parameter in the GNS. In DDP, the gradient $\nabla (f(\theta))$ is computed as the average gradient across all GPUs as shown in \autoref{fig:gns-ddp}.
 
 ![Distributed data parallelization in GNS.\label{fig:gns-ddp}](figs/gns-ddp.png)
 
